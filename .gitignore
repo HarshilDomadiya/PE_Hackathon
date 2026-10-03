@@ -1,0 +1,7 @@
+node_modules/
+__pycache__/
+core/__pycache__/
+data/__pycache__/
+*.pyc
+script_*.json
+parse_chatgpt*.py
