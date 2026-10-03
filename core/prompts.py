@@ -93,7 +93,7 @@ PLATFORM & FACTUAL CONSTRAINTS:
 FEW-SHOT EXAMPLE:
 Summary Facts: ["Q3 revenue grew by 42%", "$12.5M total revenue", "3,400 new Enterprise clients"]
 LinkedIn Post:
-"🚀 Growth vs. Efficiency: What Q3 numbers really tell us.
+"Growth vs. Efficiency: What Q3 numbers really tell us.
 
 ACME just reported stellar Q3 numbers, but the strategy beneath the surface is what matters:
 • Revenue surged +42% to $12.5M
@@ -138,7 +138,7 @@ STRICT TWEET FORMAT & PLATFORM CONSTRAINTS:
 FEW-SHOT EXAMPLE:
 Input: ACME Q3 revenue +42% to $12.5M with 3,400 enterprise clients.
 Output Tweets:
-Tweet 1/3: 1/3 ACME just dropped its Q3 performance report, showing a massive 42% revenue boost to $12.5M. Here are the 3 major takeaways from their growth strategy: 🧵
+Tweet 1/3: 1/3 ACME just dropped its Q3 performance report, showing a massive 42% revenue boost to $12.5M. Here are the major takeaways from their growth strategy:
 Tweet 2/3: 2/3 Enterprise acquisition is driving the engine: 3,400 new enterprise clients joined in just 90 days. But efficiency is key—CEO Jane Doe has simultaneously implemented a strategic hiring freeze.
 Tweet 3/3: 3/3 The takeaway? Growth without discipline is outdated. Modern scaling requires enterprise momentum paired with lean operations. #SaaS #Leadership
 """

@@ -5,3 +5,6 @@ data/__pycache__/
 *.pyc
 script_*.json
 parse_chatgpt*.py
+uploads/
+tests/scratch/
+.env
