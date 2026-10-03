@@ -22,6 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initializeApp() {
   const articleInput = document.getElementById('articleInput');
+  const fileInput = document.getElementById('fileInput');
+  const removeFileBtn = document.getElementById('removeFileBtn');
   const generateBtn = document.getElementById('generateBtn');
   const clearBtn = document.getElementById('clearBtn');
   const clearHistoryBtn = document.getElementById('clearHistoryBtn');
@@ -33,6 +35,10 @@ function initializeApp() {
   document.getElementById('sampleTechBtn').addEventListener('click', () => loadPresetArticle(SAMPLE_ARTICLES.tech));
   document.getElementById('sampleFinBtn').addEventListener('click', () => loadPresetArticle(SAMPLE_ARTICLES.fin));
   document.getElementById('sampleBioBtn').addEventListener('click', () => loadPresetArticle(SAMPLE_ARTICLES.bio));
+
+  // File Upload Handlers
+  if (fileInput) fileInput.addEventListener('change', handleFileUpload);
+  if (removeFileBtn) removeFileBtn.addEventListener('click', removeUploadedFile);
 
   // Flow Navigation Buttons
   setupFlowNavigation();
@@ -52,8 +58,46 @@ function initializeApp() {
 }
 
 /**
- * Binds flow pill navigation buttons.
+ * Handles Local File Upload (.txt, .md, .doc, .pdf, .json, .csv, etc.)
  */
+function handleFileUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = function(evt) {
+    const content = evt.target.result;
+    const articleInput = document.getElementById('articleInput');
+    articleInput.value = content;
+    updateCharacterCount();
+    hideError();
+
+    // Show File Badge
+    const fileBadge = document.getElementById('fileBadge');
+    const fileNameDisplay = document.getElementById('fileNameDisplay');
+    fileNameDisplay.textContent = `Uploaded File: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+    fileBadge.classList.remove('hidden');
+
+    showToast(`Loaded file "${file.name}"`);
+  };
+
+  reader.onerror = function() {
+    showError("File Upload Error", "Unable to read local file. Please try another text file.");
+  };
+
+  // Read as text
+  reader.readAsText(file);
+}
+
+function removeUploadedFile() {
+  const fileInput = document.getElementById('fileInput');
+  const fileBadge = document.getElementById('fileBadge');
+  if (fileInput) fileInput.value = '';
+  if (fileBadge) fileBadge.classList.add('hidden');
+  showToast("File removed");
+}
+
 function setupFlowNavigation() {
   const flowBtns = [
     { id: 'flowAllBtn', cardId: 'all' },
@@ -68,11 +112,9 @@ function setupFlowNavigation() {
     const el = document.getElementById(btnInfo.id);
     if (el) {
       el.addEventListener('click', () => {
-        // Toggle active pill
         document.querySelectorAll('.flow-pill').forEach(p => p.classList.remove('active'));
         el.classList.add('active');
 
-        // Toggle card visibility
         const cards = ['cardSummary', 'cardLinkedin', 'cardXThread', 'cardFacts', 'cardAudit'];
         cards.forEach(cId => {
           const cardEl = document.getElementById(cId);
@@ -101,6 +143,7 @@ function loadPresetArticle(text) {
   articleInput.value = text;
   updateCharacterCount();
   hideError();
+  removeUploadedFile();
 }
 
 function clearArticle() {
@@ -108,6 +151,7 @@ function clearArticle() {
   articleInput.value = '';
   updateCharacterCount();
   hideError();
+  removeUploadedFile();
   document.getElementById('resultsContainer').classList.add('hidden');
   document.getElementById('emptyOutputCard').classList.remove('hidden');
   document.getElementById('copyAllTopBtn').classList.add('hidden');
@@ -175,7 +219,6 @@ function renderResults(data) {
   document.getElementById('resultsContainer').classList.remove('hidden');
   document.getElementById('copyAllTopBtn').classList.remove('hidden');
 
-  // Reset flow navigation to 'All'
   document.querySelectorAll('.flow-pill').forEach(p => p.classList.remove('active'));
   const flowAll = document.getElementById('flowAllBtn');
   if (flowAll) flowAll.classList.add('active');

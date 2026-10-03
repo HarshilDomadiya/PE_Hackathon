@@ -53,15 +53,27 @@
         <div class="card input-card">
           <div class="card-header">
             <h2 class="card-title">Original Article Input</h2>
-            <button type="button" class="btn btn-ghost-sm" id="clearBtn" title="Clear input text">Clear</button>
+            <div class="input-actions">
+              <input type="file" id="fileInput" accept=".txt,.md,.pdf,.doc,.docx,.json,.csv,.rtf,.html,text/*" class="sr-only">
+              <label for="fileInput" class="btn btn-outline-sm file-upload-btn" title="Upload local file (.txt, .md, .doc, .pdf)">
+                Upload File
+              </label>
+              <button type="button" class="btn btn-ghost-sm" id="clearBtn" title="Clear input text">Clear</button>
+            </div>
           </div>
 
           <div class="card-body">
+            <!-- Uploaded File Badge -->
+            <div id="fileBadge" class="file-info-badge hidden">
+              <span id="fileNameDisplay">file.txt</span>
+              <button type="button" class="file-remove-btn" id="removeFileBtn" title="Remove uploaded file">×</button>
+            </div>
+
             <label for="articleInput" class="sr-only">Original Article Text</label>
             <textarea 
               id="articleInput" 
               class="article-textarea" 
-              placeholder="Paste your original article or blog post here (minimum 50 characters)..." 
+              placeholder="Paste article text or upload a local file (.txt, .md, .doc, .pdf)..." 
               rows="12"
             ></textarea>
             
@@ -113,7 +125,7 @@
         <!-- Empty Output Card -->
         <div id="emptyOutputCard" class="card empty-output-card">
           <h3>Ready to Process</h3>
-          <p>Paste an article on the left and click <strong>Generate Repurposed Assets</strong> to view generated content and fact fidelity analysis.</p>
+          <p>Paste an article or upload a file on the left and click <strong>Generate Repurposed Assets</strong> to view generated content and fact fidelity analysis.</p>
         </div>
 
         <!-- Results Container -->
