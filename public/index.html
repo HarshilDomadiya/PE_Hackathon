@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Content Repurposing Chain | Hackathon Problem 22</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Top Navigation / Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand">
+        <div class="logo-icon">🔄</div>
+        <div>
+          <h1 class="app-title">Content Repurposing Chain</h1>
+          <p class="app-subtitle">Turn one article into platform-ready content — with automated fact-drift validation.</p>
+        </div>
+      </div>
+      <div class="header-badges">
+        <span class="badge badge-primary">Hackathon • Problem 22</span>
+        <span class="badge badge-secondary">Team 24 • Lab MB314</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Global Notification Banner -->
+  <div id="toastNotification" class="toast hidden" role="status" aria-live="polite"></div>
+
+  <!-- Main Application Dashboard Container -->
+  <main class="dashboard-container">
+
+    <!-- Top Action Bar -->
+    <div class="top-action-bar">
+      <div class="preset-buttons">
+        <span class="preset-label">Load Sample Article:</span>
+        <button type="button" class="btn btn-outline-sm" id="sampleTechBtn">Tech Breakthrough</button>
+        <button type="button" class="btn btn-outline-sm" id="sampleFinBtn">Financial Report</button>
+        <button type="button" class="btn btn-outline-sm" id="sampleBioBtn">Biotech Trial</button>
+      </div>
+      <button type="button" class="btn btn-secondary hidden" id="copyAllTopBtn">
+        <span>📋</span> Copy All Content
+      </button>
+    </div>
+
+    <!-- Layout Grid: Left Panel (Input & History) | Right Panel (Outputs & Fact Check) -->
+    <div class="main-grid">
+
+      <!-- Left Column: Input Card & History -->
+      <section class="left-panel">
+        
+        <!-- Article Input Card -->
+        <div class="card input-card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <span class="card-icon">📝</span> Original Article Input
+            </h2>
+            <button type="button" class="btn btn-ghost-sm" id="clearBtn" title="Clear input text">Clear</button>
+          </div>
+
+          <div class="card-body">
+            <label for="articleInput" class="sr-only">Original Article Text</label>
+            <textarea 
+              id="articleInput" 
+              class="article-textarea" 
+              placeholder="Paste your original article, blog post, or report here (at least 50 characters)..." 
+              rows="12"
+            ></textarea>
+            
+            <div class="input-footer">
+              <span class="char-count" id="charCountDisplay">0 characters</span>
+              <button type="button" class="btn btn-primary" id="generateBtn">
+                <span class="btn-icon">⚡</span> Generate Repurposed Assets
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Global Error Banner -->
+        <div id="errorBanner" class="error-banner hidden" role="alert" aria-live="assertive">
+          <div class="error-icon">⚠️</div>
+          <div class="error-content">
+            <strong id="errorTitle">Generation Error</strong>
+            <p id="errorMessage">Unable to process article.</p>
+          </div>
+        </div>
+
+        <!-- Session History Section -->
+        <div class="card history-card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <span class="card-icon">📜</span> Session History
+            </h3>
+            <span class="history-badge" id="historyCount">0 generations</span>
+          </div>
+          <div class="card-body">
+            <div id="historyList" class="history-list">
+              <p class="empty-state-text">No previous generations in this session yet.</p>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Right Column: Outputs & Fact Validation -->
+      <section class="right-panel">
+
+        <!-- Loading State Card -->
+        <div id="loadingCard" class="card loading-card hidden" role="status" aria-live="polite">
+          <div class="spinner"></div>
+          <h3>Generating Repurposed Assets...</h3>
+          <p>Running multi-stage prompt workflow (Summary ➔ LinkedIn ➔ X Thread) and auditing Fact-Drift fidelity...</p>
+        </div>
+
+        <!-- Empty State Initial Card -->
+        <div id="emptyOutputCard" class="card empty-output-card">
+          <div class="empty-icon">🔄</div>
+          <h3>Ready for Content Repurposing</h3>
+          <p>Paste an article on the left and click <strong>Generate Repurposed Assets</strong> to transform it into platform-ready content with fact-drift validation.</p>
+        </div>
+
+        <!-- Results Container (Hidden until API returns) -->
+        <div id="resultsContainer" class="results-container hidden">
+
+          <!-- Fact-Drift Validation Header Banner -->
+          <div id="factValidationBanner" class="fact-banner">
+            <div class="fact-banner-left">
+              <span class="fact-banner-icon">🛡️</span>
+              <div>
+                <h3 id="factFidelityTitle">Fact-Drift Validation: 96.5% Fidelity</h3>
+                <p id="factFidelityStatus">SUPPORTED_HIGH_FIDELITY — Grounding verified against source facts.</p>
+              </div>
+            </div>
+            <div class="fact-banner-score" id="factScoreBadge">96.5%</div>
+          </div>
+
+          <!-- Article Summary Card -->
+          <div class="card output-card">
+            <div class="card-header">
+              <h3 class="card-title"><span class="card-icon">📄</span> Article Summary</h3>
+              <button type="button" class="btn btn-ghost-sm copy-btn" id="copySummaryBtn">Copy Summary</button>
+            </div>
+            <div class="card-body">
+              <p id="summaryText" class="output-prose"></p>
+            </div>
+          </div>
+
+          <!-- LinkedIn Post Card -->
+          <div class="card output-card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <span class="card-icon">💼</span> LinkedIn Post
+                <span class="length-tag" id="linkedinCharBadge">0 chars</span>
+              </h3>
+              <button type="button" class="btn btn-ghost-sm copy-btn" id="copyLinkedinBtn">Copy LinkedIn Post</button>
+            </div>
+            <div class="card-body">
+              <div id="linkedinText" class="output-prose formatted-text"></div>
+            </div>
+          </div>
+
+          <!-- X / Twitter Thread Section -->
+          <div class="card output-card">
+            <div class="card-header">
+              <h3 class="card-title"><span class="card-icon">🐦</span> X / Twitter Thread</h3>
+              <span class="length-tag" id="xThreadCountBadge">0 posts</span>
+            </div>
+            <div class="card-body">
+              <div id="xThreadList" class="x-thread-list"></div>
+            </div>
+          </div>
+
+          <!-- Extracted Source Facts Section -->
+          <div class="card output-card">
+            <div class="card-header">
+              <h3 class="card-title"><span class="card-icon">🎯</span> Extracted Source Facts</h3>
+            </div>
+            <div class="card-body">
+              <div id="sourceFactsList" class="source-facts-list"></div>
+            </div>
+          </div>
+
+          <!-- Fact-Check Claims Detail Table Section -->
+          <div class="card output-card">
+            <div class="card-header">
+              <h3 class="card-title"><span class="card-icon">🔍</span> Cross-Stage Fact Audit Claims</h3>
+            </div>
+            <div class="card-body">
+              <div id="claimsList" class="claims-list"></div>
+            </div>
+          </div>
+
+        </div> <!-- End Results Container -->
+
+      </section>
+
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
