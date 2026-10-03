@@ -58,36 +58,65 @@ function initializeApp() {
 }
 
 /**
- * Handles Local File Upload (.txt, .md, .doc, .pdf, .json, .csv, etc.)
+ * Handles Local File Upload (.pdf, .docx, .doc, .txt, .md, .json, .csv, etc.)
  */
-function handleFileUpload(e) {
+async function handleFileUpload(e) {
   const file = e.target.files[0];
   if (!file) return;
 
-  const reader = new FileReader();
+  hideError();
+  showToast(`Uploading and extracting text from "${file.name}"...`);
 
-  reader.onload = function(evt) {
-    const content = evt.target.result;
-    const articleInput = document.getElementById('articleInput');
-    articleInput.value = content;
-    updateCharacterCount();
-    hideError();
+  const ext = file.name.split('.').pop().toLowerCase();
 
-    // Show File Badge
-    const fileBadge = document.getElementById('fileBadge');
-    const fileNameDisplay = document.getElementById('fileNameDisplay');
-    fileNameDisplay.textContent = `Uploaded File: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
-    fileBadge.classList.remove('hidden');
+  // If plain text file, read locally
+  if (['txt', 'md', 'json', 'csv', 'html', 'rtf'].includes(ext)) {
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      const content = evt.target.result;
+      setArticleTextAndBadge(content, file.name, file.size);
+    };
+    reader.readAsText(file);
+    return;
+  }
 
-    showToast(`Loaded file "${file.name}"`);
-  };
+  // For PDF / DOCX / Binary documents, upload to POST /api/upload
+  const formData = new FormData();
+  formData.append('file', file);
 
-  reader.onerror = function() {
-    showError("File Upload Error", "Unable to read local file. Please try another text file.");
-  };
+  try {
+    const response = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData
+    });
 
-  // Read as text
-  reader.readAsText(file);
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      showError("File Parse Error", result.error || `Failed to extract text from "${file.name}".`);
+      return;
+    }
+
+    setArticleTextAndBadge(result.text, result.fileName || file.name, result.fileSize || file.size);
+    showToast(`Extracted ${result.text.length.toLocaleString()} characters from "${file.name}"`);
+
+  } catch (err) {
+    console.error("Upload error:", err);
+    showError("File Upload Error", "Unable to upload and parse file. Please verify server is running.");
+  }
+}
+
+function setArticleTextAndBadge(text, fileName, fileSize) {
+  const articleInput = document.getElementById('articleInput');
+  articleInput.value = text;
+  updateCharacterCount();
+  hideError();
+
+  const fileBadge = document.getElementById('fileBadge');
+  const fileNameDisplay = document.getElementById('fileNameDisplay');
+  const sizeKb = (fileSize / 1024).toFixed(1);
+  fileNameDisplay.textContent = `Uploaded Document: ${fileName} (${sizeKb} KB)`;
+  fileBadge.classList.remove('hidden');
 }
 
 function removeUploadedFile() {
@@ -170,7 +199,7 @@ async function handleGenerate() {
   hideError();
 
   if (!articleText) {
-    showError("Validation Error", "Please paste or enter an article before generating assets.");
+    showError("Validation Error", "Please paste an article or upload a PDF/DOCX file before generating assets.");
     return;
   }
 
