@@ -69,13 +69,13 @@ function generateFallbackResponse(articleText) {
 
   const summary = `This article outlines key industry developments and operational growth metrics. Essential highlights include ${sourceFacts.join(', ')}. Organizations are advised to balance aggressive execution with strict operational discipline.`;
 
-  const linkedinText = `🚀 Key Strategic Takeaways: What the Latest Performance Report Means for the Industry\n\nUnderstanding data separates high-performing organizations from the rest. Here are the core highlights:\n\n• Revenue & Growth: ${moneyMatches[0] || '$12.5M'} (${percentMatches[0] || '42%'} YoY increase)\n• Enterprise Adoption: Over ${numberMatches[0] || '3,400'} active accounts\n• Strategic Alignment: Prioritizing lean operations & sustainable scalability\n\n💡 Key Takeaway:\nScaling momentum while maintaining lean operations is the 2026 playbook.\n\nWhat strategies is your organization prioritizing this quarter? Share below! 👇\n\n#BusinessStrategy #Leadership #SaaS #Innovation`;
+  const linkedinText = `Key Strategic Takeaways: What the Latest Performance Report Means for the Industry\n\nUnderstanding data separates high-performing organizations from the rest. Here are the core highlights:\n\n• Revenue & Growth: ${moneyMatches[0] || '$12.5M'} (${percentMatches[0] || '42%'} YoY increase)\n• Enterprise Adoption: Over ${numberMatches[0] || '3,400'} active accounts\n• Strategic Alignment: Prioritizing lean operations & sustainable scalability\n\nKey Takeaway:\nScaling momentum while maintaining lean operations is the 2026 playbook.\n\nWhat strategies is your organization prioritizing this quarter? Share below:\n\n#BusinessStrategy #Leadership #SaaS #Innovation`;
 
   const xThread = [
-    `1/4 🧵 Understanding recent industry shifts is critical for leaders. Here is a breakdown of the core findings, data points, and strategic takeaways:`,
+    `1/4 Understanding recent industry shifts is critical for leaders. Here is a breakdown of the core findings, data points, and strategic takeaways:`,
     `2/4 Key Data Points:\n• Revenue surged ${percentMatches[0] || '42%'} to ${moneyMatches[0] || '$12.5M'}\n• Client base expanded by ${numberMatches[0] || '3,400'} enterprise accounts`,
     `3/4 Takeaway: Operational velocity must be paired with clear quality guardrails. Organizations that measure fact fidelity build stronger long-term trust.`,
-    `4/4 Read the full breakdown and share your thoughts! What is your top focus this quarter? #TechTrends #Leadership`
+    `4/4 Read the full breakdown and share your thoughts. What is your top focus this quarter? #TechTrends #Leadership`
   ];
 
   const claims = [

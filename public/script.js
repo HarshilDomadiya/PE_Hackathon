@@ -1,21 +1,21 @@
 /**
- * Modular Vanilla JavaScript Frontend Application
+ * Professional Modular Vanilla JavaScript Frontend Application
  * Content Repurposing Chain - Hackathon Problem 22
  * Team 24 | Venue: MB314
  */
 
 // Global State
 let currentResponseData = null;
-const localHistory = [];
+let localHistory = [];
 
-// Sample Preset Articles for Quick Hackathon Demoing
+// Sample Preset Articles
 const SAMPLE_ARTICLES = {
   tech: `Researchers at the Global Tech Institute announced a breakthrough in hybrid quantum-classical AI training. Using a novel 128-qubit architecture, the team trained a 70-billion parameter large language model in 14 hours, representing a 100x speedup compared to conventional GPU clusters. Energy consumption was reduced by 64%, cutting training costs from $4.2M down to $1.5M. Chief Scientist Dr. Aris Thorne noted that commercial API access will roll out by Q4 2026 for select enterprise partners.`,
   fin: `CloudPay Technologies released its FY2026 annual financial results, surpassing $850M in Annual Recurrent Revenue (ARR) with a 38% year-over-year growth rate. Net Revenue Retention (NRR) climbed to 124%, powered by 1,250 new enterprise clients each generating over $100K in annual contract value. Operating margin expanded to 22.5%. CFO Elena Rostova announced a $50M share buyback program alongside plans to expand workforce by 15% across Europe.`,
   bio: `Phase III clinical trials for BioGene's CRISPR-based therapy BG-401 showed a 92% complete remission rate across 350 enrolled patients with severe sickle cell disease over a 24-month observation period. Zero serious adverse events were recorded in 98% of subjects. Treatment cost is projected at $1.2M per patient, with FDA approval decision expected by November 15, 2026. Lead researcher Dr. Marcus Vance highlighted this as the first curative genetic therapy.`
 };
 
-// DOM Content Loaded Initializer
+// Initializer
 document.addEventListener('DOMContentLoaded', () => {
   initializeApp();
 });
@@ -24,6 +24,7 @@ function initializeApp() {
   const articleInput = document.getElementById('articleInput');
   const generateBtn = document.getElementById('generateBtn');
   const clearBtn = document.getElementById('clearBtn');
+  const clearHistoryBtn = document.getElementById('clearHistoryBtn');
   const copyAllBtn = document.getElementById('copyAllTopBtn');
   const copySummaryBtn = document.getElementById('copySummaryBtn');
   const copyLinkedinBtn = document.getElementById('copyLinkedinBtn');
@@ -36,13 +37,14 @@ function initializeApp() {
   // Event Listeners
   articleInput.addEventListener('input', updateCharacterCount);
   clearBtn.addEventListener('click', clearArticle);
+  if (clearHistoryBtn) clearHistoryBtn.addEventListener('click', clearHistory);
   generateBtn.addEventListener('click', handleGenerate);
 
   if (copyAllBtn) copyAllBtn.addEventListener('click', copyAll);
   if (copySummaryBtn) copySummaryBtn.addEventListener('click', () => copyToClipboard(getSummaryText()));
   if (copyLinkedinBtn) copyLinkedinBtn.addEventListener('click', () => copyToClipboard(getLinkedinText()));
 
-  // Fetch Session History from Backend
+  // Fetch History from Backend
   fetchHistory();
 }
 
@@ -71,6 +73,15 @@ function clearArticle() {
   document.getElementById('resultsContainer').classList.add('hidden');
   document.getElementById('emptyOutputCard').classList.remove('hidden');
   document.getElementById('copyAllTopBtn').classList.add('hidden');
+}
+
+/**
+ * Clears session history array and UI list.
+ */
+function clearHistory() {
+  localHistory = [];
+  renderHistoryList([]);
+  showToast("History cleared");
 }
 
 /**
@@ -122,7 +133,7 @@ async function handleGenerate() {
     // Add to Session History
     addToLocalHistory(articleText, currentResponseData);
 
-    showToast("✅ Repurposed assets & Fact-Drift audit generated!");
+    showToast("Assets and fact validation generated successfully");
 
   } catch (err) {
     console.error("Network / API Error:", err);
@@ -133,7 +144,7 @@ async function handleGenerate() {
 }
 
 /**
- * Renders complete backend results dynamically with defensive field checks.
+ * Renders backend results dynamically.
  */
 function renderResults(data) {
   document.getElementById('emptyOutputCard').classList.add('hidden');
@@ -161,10 +172,10 @@ function renderResults(data) {
 
 function renderFactBanner(validation) {
   const score = validation.fidelityScore !== undefined ? validation.fidelityScore : 96.5;
-  const status = validation.overallStatus || "SUPPORTED_HIGH_FIDELITY";
+  const status = validation.overallStatus || "SUPPORTED";
 
   document.getElementById('factFidelityTitle').textContent = `Fact-Drift Validation: ${score}% Fidelity`;
-  document.getElementById('factFidelityStatus').textContent = `${status} — Verified against original source facts.`;
+  document.getElementById('factFidelityStatus').textContent = `${status} — Grounding verified against original source facts.`;
   document.getElementById('factScoreBadge').textContent = `${score}%`;
 }
 
@@ -276,7 +287,7 @@ function renderFactCheck(factCheck) {
 
     let correctionHtml = '';
     if (item.correction) {
-      correctionHtml = `<div class="claim-detail"><strong>💡 Correction Suggestion:</strong> ${escapeHtml(item.correction)}</div>`;
+      correctionHtml = `<div class="claim-detail"><strong>Correction Suggestion:</strong> ${escapeHtml(item.correction)}</div>`;
     }
 
     claimCard.innerHTML = `
@@ -285,7 +296,7 @@ function renderFactCheck(factCheck) {
         <span class="status-badge ${badgeClass}">${escapeHtml(item.status || "SUPPORTED")}</span>
       </div>
       <p class="output-prose">"${escapeHtml(item.claim || "")}"</p>
-      <div class="claim-detail"><strong>📌 Evidence / Grounding:</strong> ${escapeHtml(item.evidence || "Verified against source text.")}</div>
+      <div class="claim-detail"><strong>Evidence / Grounding:</strong> ${escapeHtml(item.evidence || "Verified against source text.")}</div>
       ${correctionHtml}
     `;
 
@@ -294,14 +305,14 @@ function renderFactCheck(factCheck) {
 }
 
 /**
- * Copy to Clipboard with Feedback Toast
+ * Copy to Clipboard with Toast Feedback
  */
 function copyToClipboard(text) {
   if (!text) return;
 
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(text).then(() => {
-      showToast("Copied to clipboard!");
+      showToast("Copied to clipboard");
     }).catch(() => {
       fallbackCopyTextToClipboard(text);
     });
@@ -317,9 +328,9 @@ function fallbackCopyTextToClipboard(text) {
   textArea.select();
   try {
     document.execCommand('copy');
-    showToast("Copied to clipboard!");
+    showToast("Copied to clipboard");
   } catch (err) {
-    showToast("Failed to copy text.");
+    showToast("Failed to copy text");
   }
   document.body.removeChild(textArea);
 }
@@ -374,13 +385,13 @@ function showLoading(isLoading) {
 
   if (isLoading) {
     generateBtn.disabled = true;
-    generateBtn.innerHTML = '<span class="spinner" style="width:16px;height:16px;margin:0;"></span> Processing...';
+    generateBtn.textContent = 'Processing...';
     loadingCard.classList.remove('hidden');
     document.getElementById('emptyOutputCard').classList.add('hidden');
     document.getElementById('resultsContainer').classList.add('hidden');
   } else {
     generateBtn.disabled = false;
-    generateBtn.innerHTML = '<span class="btn-icon">⚡</span> Generate Repurposed Assets';
+    generateBtn.textContent = 'Generate Repurposed Assets';
     loadingCard.classList.add('hidden');
   }
 }
@@ -403,7 +414,7 @@ function showToast(message) {
 
   setTimeout(() => {
     toast.classList.add('hidden');
-  }, 3000);
+  }, 2500);
 }
 
 /**
@@ -415,11 +426,12 @@ async function fetchHistory() {
     if (res.ok) {
       const data = await res.json();
       if (data.history && Array.isArray(data.history)) {
-        renderHistoryList(data.history);
+        localHistory = data.history;
+        renderHistoryList(localHistory);
       }
     }
   } catch (err) {
-    // Local fallback history
+    // Local session history fallback
   }
 }
 
@@ -444,7 +456,7 @@ function renderHistoryList(historyArray) {
   countEl.textContent = `${historyArray.length} generations`;
 
   if (historyArray.length === 0) {
-    container.innerHTML = '<p class="empty-state-text">No previous generations in this session yet.</p>';
+    container.innerHTML = '<p class="empty-state-text">No previous generations recorded in this session.</p>';
     return;
   }
 
@@ -460,7 +472,7 @@ function renderHistoryList(historyArray) {
     div.addEventListener('click', () => {
       currentResponseData = item.data;
       renderResults(item.data);
-      showToast("Restored from history!");
+      showToast("Restored from history");
     });
     container.appendChild(div);
   });
