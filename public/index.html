@@ -119,6 +119,17 @@
         <!-- Results Container -->
         <div id="resultsContainer" class="results-container hidden">
 
+          <!-- Workflow Step Navigation Bar -->
+          <div class="workflow-flow-bar">
+            <span class="flow-label">Asset Workflow Flow:</span>
+            <button type="button" class="flow-pill active" id="flowAllBtn">All Stages</button>
+            <button type="button" class="flow-pill" id="flowSummaryBtn">1. Summary</button>
+            <button type="button" class="flow-pill" id="flowLinkedinBtn">2. LinkedIn</button>
+            <button type="button" class="flow-pill" id="flowXThreadBtn">3. X Thread</button>
+            <button type="button" class="flow-pill" id="flowFactsBtn">4. Source Facts</button>
+            <button type="button" class="flow-pill" id="flowAuditBtn">5. Fact Audit</button>
+          </div>
+
           <!-- Fact Validation Header Banner -->
           <div id="factValidationBanner" class="fact-banner">
             <div class="fact-banner-left">
@@ -131,9 +142,9 @@
           </div>
 
           <!-- Article Summary Card -->
-          <div class="card output-card">
+          <div class="card output-card" id="cardSummary">
             <div class="card-header">
-              <h3 class="card-title">Article Summary</h3>
+              <h3 class="card-title">Stage 1: Article Summary</h3>
               <button type="button" class="btn btn-ghost-sm copy-btn" id="copySummaryBtn">Copy Summary</button>
             </div>
             <div class="card-body">
@@ -142,10 +153,10 @@
           </div>
 
           <!-- LinkedIn Post Card -->
-          <div class="card output-card">
+          <div class="card output-card" id="cardLinkedin">
             <div class="card-header">
               <h3 class="card-title">
-                LinkedIn Post
+                Stage 2: LinkedIn Post
                 <span class="length-tag" id="linkedinCharBadge">0 chars</span>
               </h3>
               <button type="button" class="btn btn-ghost-sm copy-btn" id="copyLinkedinBtn">Copy LinkedIn Post</button>
@@ -156,9 +167,9 @@
           </div>
 
           <!-- X / Twitter Thread Section -->
-          <div class="card output-card">
+          <div class="card output-card" id="cardXThread">
             <div class="card-header">
-              <h3 class="card-title">X / Twitter Thread</h3>
+              <h3 class="card-title">Stage 3: X / Twitter Thread</h3>
               <span class="length-tag" id="xThreadCountBadge">0 posts</span>
             </div>
             <div class="card-body">
@@ -167,9 +178,9 @@
           </div>
 
           <!-- Extracted Source Facts Section -->
-          <div class="card output-card">
+          <div class="card output-card" id="cardFacts">
             <div class="card-header">
-              <h3 class="card-title">Extracted Source Facts</h3>
+              <h3 class="card-title">Stage 4: Extracted Source Facts</h3>
             </div>
             <div class="card-body">
               <div id="sourceFactsList" class="source-facts-list"></div>
@@ -177,9 +188,9 @@
           </div>
 
           <!-- Fact Check Claims Table -->
-          <div class="card output-card">
+          <div class="card output-card" id="cardAudit">
             <div class="card-header">
-              <h3 class="card-title">Cross-Stage Fact Audit Claims</h3>
+              <h3 class="card-title">Stage 5: Cross-Stage Fact Audit Claims</h3>
             </div>
             <div class="card-body">
               <div id="claimsList" class="claims-list"></div>

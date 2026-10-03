@@ -34,6 +34,9 @@ function initializeApp() {
   document.getElementById('sampleFinBtn').addEventListener('click', () => loadPresetArticle(SAMPLE_ARTICLES.fin));
   document.getElementById('sampleBioBtn').addEventListener('click', () => loadPresetArticle(SAMPLE_ARTICLES.bio));
 
+  // Flow Navigation Buttons
+  setupFlowNavigation();
+
   // Event Listeners
   articleInput.addEventListener('input', updateCharacterCount);
   clearBtn.addEventListener('click', clearArticle);
@@ -49,8 +52,43 @@ function initializeApp() {
 }
 
 /**
- * Updates character count dynamically while typing.
+ * Binds flow pill navigation buttons.
  */
+function setupFlowNavigation() {
+  const flowBtns = [
+    { id: 'flowAllBtn', cardId: 'all' },
+    { id: 'flowSummaryBtn', cardId: 'cardSummary' },
+    { id: 'flowLinkedinBtn', cardId: 'cardLinkedin' },
+    { id: 'flowXThreadBtn', cardId: 'cardXThread' },
+    { id: 'flowFactsBtn', cardId: 'cardFacts' },
+    { id: 'flowAuditBtn', cardId: 'cardAudit' }
+  ];
+
+  flowBtns.forEach(btnInfo => {
+    const el = document.getElementById(btnInfo.id);
+    if (el) {
+      el.addEventListener('click', () => {
+        // Toggle active pill
+        document.querySelectorAll('.flow-pill').forEach(p => p.classList.remove('active'));
+        el.classList.add('active');
+
+        // Toggle card visibility
+        const cards = ['cardSummary', 'cardLinkedin', 'cardXThread', 'cardFacts', 'cardAudit'];
+        cards.forEach(cId => {
+          const cardEl = document.getElementById(cId);
+          if (cardEl) {
+            if (btnInfo.cardId === 'all' || btnInfo.cardId === cId) {
+              cardEl.classList.remove('hidden');
+            } else {
+              cardEl.classList.add('hidden');
+            }
+          }
+        });
+      });
+    }
+  });
+}
+
 function updateCharacterCount() {
   const articleInput = document.getElementById('articleInput');
   const charDisplay = document.getElementById('charCountDisplay');
@@ -75,25 +113,18 @@ function clearArticle() {
   document.getElementById('copyAllTopBtn').classList.add('hidden');
 }
 
-/**
- * Clears session history array and UI list.
- */
 function clearHistory() {
   localHistory = [];
   renderHistoryList([]);
   showToast("History cleared");
 }
 
-/**
- * Handles main Generate CTA button click.
- */
 async function handleGenerate() {
   const articleInput = document.getElementById('articleInput');
   const articleText = articleInput.value.trim();
 
   hideError();
 
-  // 1. Validation
   if (!articleText) {
     showError("Validation Error", "Please paste or enter an article before generating assets.");
     return;
@@ -104,11 +135,9 @@ async function handleGenerate() {
     return;
   }
 
-  // 2. Set UI Loading State
   showLoading(true);
 
   try {
-    // 3. POST /api/generate
     const response = await fetch('/api/generate', {
       method: 'POST',
       headers: {
@@ -126,11 +155,9 @@ async function handleGenerate() {
       return;
     }
 
-    // 4. Successful Response Rendering
     currentResponseData = result.data || {};
     renderResults(currentResponseData);
     
-    // Add to Session History
     addToLocalHistory(articleText, currentResponseData);
 
     showToast("Assets and fact validation generated successfully");
@@ -143,30 +170,25 @@ async function handleGenerate() {
   }
 }
 
-/**
- * Renders backend results dynamically.
- */
 function renderResults(data) {
   document.getElementById('emptyOutputCard').classList.add('hidden');
   document.getElementById('resultsContainer').classList.remove('hidden');
   document.getElementById('copyAllTopBtn').classList.remove('hidden');
 
-  // Fact Fidelity Banner
+  // Reset flow navigation to 'All'
+  document.querySelectorAll('.flow-pill').forEach(p => p.classList.remove('active'));
+  const flowAll = document.getElementById('flowAllBtn');
+  if (flowAll) flowAll.classList.add('active');
+  ['cardSummary', 'cardLinkedin', 'cardXThread', 'cardFacts', 'cardAudit'].forEach(cId => {
+    const el = document.getElementById(cId);
+    if (el) el.classList.remove('hidden');
+  });
+
   renderFactBanner(data.validation || {});
-
-  // 1. Summary
   renderSummary(data.summary || "");
-
-  // 2. LinkedIn
   renderLinkedIn(data.linkedin || {});
-
-  // 3. X Thread
   renderXThread(data.xThread || []);
-
-  // 4. Source Facts
   renderSourceFacts(data.sourceFacts || []);
-
-  // 5. Fact Check Claims
   renderFactCheck(data.factCheck || {});
 }
 
@@ -229,7 +251,6 @@ function renderXThread(xThread) {
     threadListEl.appendChild(postCard);
   });
 
-  // Attach individual copy handlers
   threadListEl.querySelectorAll('.copy-tweet-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       const idx = parseInt(e.target.getAttribute('data-index'), 10);
@@ -304,9 +325,6 @@ function renderFactCheck(factCheck) {
   });
 }
 
-/**
- * Copy to Clipboard with Toast Feedback
- */
 function copyToClipboard(text) {
   if (!text) return;
 
@@ -335,9 +353,6 @@ function fallbackCopyTextToClipboard(text) {
   document.body.removeChild(textArea);
 }
 
-/**
- * Copy All Repurposed Content
- */
 function copyAll() {
   if (!currentResponseData) return;
 
@@ -376,9 +391,6 @@ function getLinkedinText() {
   return typeof currentResponseData.linkedin === 'string' ? currentResponseData.linkedin : (currentResponseData.linkedin.text || "");
 }
 
-/**
- * UI State Helpers
- */
 function showLoading(isLoading) {
   const generateBtn = document.getElementById('generateBtn');
   const loadingCard = document.getElementById('loadingCard');
@@ -417,9 +429,6 @@ function showToast(message) {
   }, 2500);
 }
 
-/**
- * History Management
- */
 async function fetchHistory() {
   try {
     const res = await fetch('/api/history');
@@ -431,7 +440,6 @@ async function fetchHistory() {
       }
     }
   } catch (err) {
-    // Local session history fallback
   }
 }
 

@@ -340,6 +340,49 @@ body {
   color: var(--text-primary);
 }
 
+/* Workflow Flow Bar */
+.workflow-flow-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  background: #ffffff;
+  padding: 10px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+}
+
+.flow-label {
+  font-size: 0.825rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-right: 4px;
+}
+
+.flow-pill {
+  background: #f1f5f9;
+  border: 1px solid var(--border-light);
+  color: var(--text-secondary);
+  font-size: 0.775rem;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.flow-pill:hover {
+  background: #e2e8f0;
+  color: var(--text-primary);
+}
+
+.flow-pill.active {
+  background: var(--primary-color);
+  color: #ffffff;
+  border-color: var(--primary-color);
+}
+
 /* Fact Banner */
 .fact-banner {
   background: var(--primary-color);
